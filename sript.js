@@ -3,12 +3,32 @@ function prt(arr) {
 }
 
 const myTodolist = [];
+let tempIndex = -1;
+let tempValue = "";
 
 const input = document.getElementById("inp");
 const btn = document.getElementById("btn");
 const myList = document.getElementById("list");
+const Updatebtn = document.getElementById("updateBtn");
 
 btn.addEventListener("click", takeInput);
+Updatebtn.addEventListener("click", function () {
+  if (tempIndex == -1) {
+    // update nothing
+    return;
+  }
+  const newValue = input.value;
+  // if value is not changed then no need to update
+  if (tempValue === newValue) {
+    alert("No Change Detected");
+    return;
+  }
+  myTodolist[tempIndex] = newValue;
+  storeToDoInLocalStorage();
+  updateDom();
+  input.value = "";
+  toggleButton("none", "inline");
+});
 
 function takeInput() {
   let userInput = input.value;
@@ -73,16 +93,28 @@ function deleteItemFromList(arr, index) {
 function deleteElement(index) {
   deleteItemFromList(myTodolist, index);
   storeToDoInLocalStorage();
-  myList.innerHTML = "";
-  showOldTodos();
+  updateDom();
 }
 
 function editTodo(index) {
-  console.log(index);
+  const valueToBeUpdated = myTodolist[index];
+  tempValue = valueToBeUpdated;
+  toggleButton("inline", "none");
+  input.value = valueToBeUpdated;
+  tempIndex = index;
 }
 
 function storeToDoInLocalStorage() {
   localStorage.setItem("todolist", JSON.stringify(myTodolist));
+}
+
+function updateDom() {
+  myList.innerHTML = "";
+  showOldTodos();
+}
+
+function toggleButton(update, add) {
+  ((Updatebtn.style.display = update), (btn.style.display = add));
 }
 
 getOldTodos(); // calling a fucntion
